@@ -1,0 +1,125 @@
+## nginx configuration
+## Ref: https://github.com/kubernetes/ingress/blob/master/controllers/nginx/configuration.md
+##
+
+defaultBackend:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 80
+  replicaCount: 2
+  minAvailable: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 200Mi
+    limits:
+      cpu: 10m
+      memory: 200Mi
+  tolerations:
+    - effect: NoSchedule
+      key: canvass-app
+      operator: Equal
+      value: "false"
+    - effect: NoSchedule
+      key: kubernetes.azure.com/scalesetpriority
+      operator: Equal
+      value: spot
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "agentpool"
+                operator: In
+                values: ["mempool2"]
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: name
+                  operator: In
+                  values: ["nginx-ingress-default-backend"]
+            topologyKey: "kubernetes.io/hostname"
+
+controller:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 100
+    targetMemoryUtilizationPercentage: 100
+  name: controller
+  replicaCount: 2
+  minAvailable: 1
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 2
+  resources:
+    requests:
+      cpu: 30m
+      memory: 200Mi
+    limits:
+      cpu: 100m
+      memory: 300Mi
+  publishService:
+    enabled: true
+  podAnnotations:
+    ad.datadoghq.com/nginx-ingress-controller.check_names: '["nginx","nginx_ingress_controller"]'
+    ad.datadoghq.com/nginx-ingress-controller.init_configs: "[{},{}]"
+    ad.datadoghq.com/nginx-ingress-controller.instances: '[{"nginx_status_url": "http://%%host%%:18080/nginx_status"},{"prometheus_url": "http://%%host%%:10254/metrics"}]'
+
+  scope:
+    enabled: true
+    #namespace: ""   # specify as command-line option
+
+  config:
+    enable-vts-status: "false"
+    proxy-body-size: "5000m"
+    proxy-read-timeout: "500"
+    http-snippet: |
+      server {
+        listen 18080;
+
+        location /nginx_status {
+          allow all;
+          stub_status on;
+        }
+
+        location / {
+          return 404;
+        }
+      }
+  tolerations:
+    - effect: NoSchedule
+      key: canvass-app
+      operator: Equal
+      value: "false"
+    - effect: NoSchedule
+      key: kubernetes.azure.com/scalesetpriority
+      operator: Equal
+      value: spot
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "agentpool"
+                operator: In
+                values: ["mempool2"]
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: name
+                  operator: In
+                  values: ["nginx-ingress-controller"]
+            topologyKey: "kubernetes.io/hostname"

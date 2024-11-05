@@ -1,0 +1,19 @@
+
+DATABASE_PASSWORD="CanvassML4all!"
+
+NEXTAUTH_URL="https://langfuse-4qjobwj6xs4xo-app.whiteisland-a528e000.canadacentral.azurecontainerapps.io"
+
+
+NEXTAUTH_SECRET="CanvassML4all!"
+SALT="salt" # salt used to hash api keys
+
+
+# Must be 256 bits, 64 string characters in hex format, generate via: openssl rand -hex 32
+ENCRYPTION_KEY="0000000000000000000000000000000000000000000000000000000000000000"
+
+AUTH_DISABLE_USERNAME_PASSWORD=true
+AUTH_DISABLE_SIGNUP=true
+
+AUTH_GITHUB_CLIENT_ID=Ov23li4UyiTjWhvtfcJE
+AUTH_GITHUB_CLIENT_SECRET=85df22ecb3f3991858f6329ace8cf59a5b777d8c
+AUTH_GITHUB_ALLOW_ACCOUNT_LINKING=false

@@ -13,17 +13,25 @@ langfuse:
   port: 3000
   nodeEnv: production
   nextauth:
-    url: http://localhost:3000
-    secret: changeme
-  salt: changeme
+    url: https://langfuse.monet-dev.canvass.ai
+    secret: secret
+  salt: salt
   telemetryEnabled: True
-  nextPublicSignUpDisabled: False
+  nextPublicSignUpDisabled: True
   enableExperimentalFeatures: False
   extraContainers: []
   extraVolumes: []
   extraInitContainers: []
   extraVolumeMounts: []
-  additionalEnv: []
+  additionalEnv:
+    - name: AUTH_GITHUB_CLIENT_ID
+      value: "Ov23li4UyiTjWhvtfcJE"
+    - name: AUTH_GITHUB_CLIENT_SECRET
+      value: "85df22ecb3f3991858f6329ace8cf59a5b777d8c"
+    - name: AUTH_GITHUB_ALLOW_ACCOUNT_LINKING
+      value: "false"
+    - name: AUTH_DISABLE_SIGNUP
+      value: "True"
     # example
     # - name: "DATABASE_PASSWORD"
     #   valueFrom:
@@ -36,7 +44,7 @@ langfuse:
     #       name: "my-configmap"
     #       key: "email-from-address"
     # - name: DATABASE_USERNAME
-    #   value: langfuse-postgres  
+    #   value: langfuse-postgres
 
 serviceAccount:
   create: true
@@ -54,7 +62,13 @@ service:
   port: 3000
 
 ingress:
-  enabled: false
+  ingressName: lf-nginx
+  namespace: lf
+  enabled: true
+  className: lf-nginx
+  secretName: lf-nginx-tls
+  url:
+    - langfuse.monet-dev.canvass.ai
 
 resources: {}
 
@@ -68,11 +82,12 @@ tolerations: []
 affinity: {}
 
 postgresql:
+  host: dev-cacn-database01.postgres.database.azure.com
   auth:
     username: postgres
-    password: postgres
-    database: postgres_langfuse
-  deploy: true
+    password: 3pjFAq7P3hQ4E3cF
+    database: langfuse
+  deploy: false
   architecture: standalone
   primary:
     service:

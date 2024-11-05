@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.ingress.ingressName }}
+  namespace: {{ .Values.ingress.namespace }}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    acme.cert-manager.io/http01-ingress-class: {{ .Values.ingress.namespace }}
+spec:
+  ingressClassName: {{ .Values.ingress.namespace }}
+  tls:
+    - hosts:
+      - langfuse.monet-dev.canvass.ai
+      # This assumes tls-secret exists and the SSL
+      # certificate contains a CN for www.subdomain.canvass.ai
+      secretName: {{ .Values.ingress.secretName }}
+  rules:
+    {{- range .Values.ingress.url }}
+    - host: {{ . }}
+      http:
+        paths:
+        - pathType: Prefix
+          backend:
+            service:
+              name: "lf-deployments-langfuse"
+              port:
+                number: {{ $.Values.service.port }}
+          path: /
+    {{- end }}
