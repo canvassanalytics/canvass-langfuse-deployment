@@ -25,13 +25,13 @@ langfuse:
   extraVolumeMounts: []
   additionalEnv:
     - name: AUTH_GITHUB_CLIENT_ID
-      value: "Ov23li4UyiTjWhvtfcJE"
+      value: "Ov23lidegBlKIgEc1Gmk"
     - name: AUTH_GITHUB_CLIENT_SECRET
-      value: "85df22ecb3f3991858f6329ace8cf59a5b777d8c"
+      value: "c0c0fcce816000f6fcf051d66b2a29fca90be991"
     - name: AUTH_GITHUB_ALLOW_ACCOUNT_LINKING
       value: "false"
     - name: AUTH_DISABLE_SIGNUP
-      value: "True"
+      value: "true"
     # example
     # - name: "DATABASE_PASSWORD"
     #   valueFrom:
