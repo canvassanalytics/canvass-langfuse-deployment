@@ -30,8 +30,6 @@ langfuse:
       value: "c0c0fcce816000f6fcf051d66b2a29fca90be991"
     - name: AUTH_GITHUB_ALLOW_ACCOUNT_LINKING
       value: "false"
-    - name: AUTH_DISABLE_SIGNUP
-      value: "true"
     # example
     # - name: "DATABASE_PASSWORD"
     #   valueFrom:
